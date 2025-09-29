@@ -9,15 +9,30 @@ const EngagementForm = ({ id }) => {
 const [filteredUsers, setFilteredUsers] = useState([]);
 const [userSearch, setUserSearch] = useState('');
 
-  const [formData, setFormData] = useState({
-    callDate: '',
-    orbiterName: '',
-    occasion: '',
-    discussionDetails: '',
-    orbiterSuggestions: [''],
-    teamSuggestions: [''],
-    referralPossibilities: ['']
-  });
+const [formData, setFormData] = useState({
+  callDate: '',
+  orbiterName: '',
+  occasion: '',
+  referralId: '',
+  eventName: '',
+  otherOccasion: '',
+  discussionDetails: '',
+  orbiterSuggestions: [''],
+  teamSuggestions: [''],
+  referralPossibilities: [''],
+  nextFollowupDate: ''  // ✅ New field added
+});
+
+const formatDate = (date) => {
+  if (!date) return "—";
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const year = d.getFullYear();
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+};
 
   const handleArrayChange = (field, index, value) => {
     const updated = [...formData[field]];
@@ -68,35 +83,40 @@ const [userSearch, setUserSearch] = useState('');
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = async () => {
-    if (!id) {
-      alert('Prospect ID missing!');
-      return;
-    }
+ const handleSave = async () => {
+  if (!id) {
+    alert('Prospect ID missing!');
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const stage5Ref = collection(db, 'Prospects', id, 'engagementform');
-      await addDoc(stage5Ref, formData);
-      alert('Data saved successfully!');
-      setFormData({
-        callDate: '',
-        orbiterName: '',
-        occasion: '',
-        discussionDetails: '',
-        orbiterSuggestions: [''],
-        teamSuggestions: [''],
-        referralPossibilities: ['']
-      });
-      
-      fetchEntries(); // Refresh entries after saving
-    } catch (err) {
-      console.error('Error saving data:', err);
-      alert('Failed to save data.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const stage5Ref = collection(db, 'Prospects', id, 'engagementform');
+    await addDoc(stage5Ref, {
+      ...formData,
+      createdAt: new Date(),   // ✅ first created
+      updatedAt: new Date()    // ✅ initially same as createdAt
+    });
+    alert('Data saved successfully!');
+    setFormData({
+      callDate: '',
+      orbiterName: '',
+      occasion: '',
+      discussionDetails: '',
+      orbiterSuggestions: [''],
+      teamSuggestions: [''],
+      referralPossibilities: ['']
+    });
+
+    fetchEntries();
+  } catch (err) {
+    console.error('Error saving data:', err);
+    alert('Failed to save data.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const fetchEntries = async () => {
     if (!id) return;
@@ -182,19 +202,73 @@ useEffect(() => {
         </ul>
       )}
   
-      {/* Form Text Inputs */}
-      <li className='form-row'>
-        <label className="form-label">Occasion</label>
-        <div className='multipleitem'>
-        <input
-          type="text"
-          name="occasion"
-          value={formData.occasion}
-          onChange={handleChange}
-          required
-        />
-        </div>
-      </li>
+  {/* Occasion Dropdown */}
+<li className='form-row'>
+  <label className="form-label">Occasion</label>
+  <div className='multipleitem'>
+    <select
+      name="occasion"
+      value={formData.occasion}
+      onChange={handleChange}
+      required
+    >
+      <option value="">-- Select Occasion --</option>
+      <option value="Referral Follow up">Referral Follow up</option>
+      <option value="Rapport building">Rapport building</option>
+      <option value="Event Calling">Event Calling</option>
+      <option value="Enquiry Follow ups">Enquiry Follow ups</option>
+      <option value="Birthday Wishes">Birthday Wishes</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+</li>
+
+{/* Conditional extra input based on occasion */}
+{formData.occasion === "Referral Follow up" && (
+  <li className="form-row">
+    <label className="form-label">Referral ID</label>
+      <div className='multipleitem'>
+    <input
+      type="text"
+      name="referralId"
+      value={formData.referralId || ""}
+      onChange={handleChange}
+      placeholder="Enter Referral ID"
+    />
+    </div>
+  </li>
+)}
+
+{formData.occasion === "Event Calling" && (
+  <li className="form-row">
+    <label className="form-label">Event Name</label>
+    <div className='multipleitem'>
+    <input
+      type="text"
+      name="eventName"
+      value={formData.eventName || ""}
+      onChange={handleChange}
+      placeholder="Enter Event Name"
+    />
+    </div>
+  </li>
+)}
+
+{formData.occasion === "Other" && (
+  <li className="form-row">
+    <label className="form-label">Other Occasion</label>
+    <div className='multipleitem'>
+    <input
+      type="text"
+      name="otherOccasion"
+      value={formData.otherOccasion || ""}
+      onChange={handleChange}
+      placeholder="Enter Occasion Name"
+    />
+    </div>
+  </li>
+)}
+
 
 
   <li className='form-row'>
@@ -207,6 +281,18 @@ useEffect(() => {
           required
         />
       </li>
+      <li className='form-row'>
+  <label className="form-label">Next Follow-up Date</label>
+  <div className='multipleitem'>
+    <input
+      type="datetime-local"
+      name="nextFollowupDate"
+      value={formData.nextFollowupDate}
+      onChange={handleChange}
+    />
+  </div>
+</li>
+
       </ul>
       <ul className="form-fields">
       {/* Orbiter Suggestions */}
@@ -272,52 +358,74 @@ useEffect(() => {
     {entries.length === 0 ? (
       <p className="no-data">No data found.</p>
     ) : (
-      <table className="entries-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Orbiter Name</th>
-            <th>Occasion</th>
-            <th>Discussion</th>
-            <th>Orbiter Suggestions</th>
-            <th>Team Suggestions</th>
-            <th>Referrals</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.map((entry) => (
-            <tr key={entry.id}>
-             <td>{new Date(entry.callDate).toLocaleString()}</td>
+ <table className="entries-table">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Orbiter Name</th>
+      <th>Occasion</th>
+      <th>Discussion</th>
+      <th>Next Follow-up</th>
+      <th>Orbiter Suggestions</th>
+      <th>Team Suggestions</th>
+      <th>Referrals</th>
+      <th>Last Updated</th> {/* ✅ New column */}
+    </tr>
+  </thead>
+  <tbody>
+    {entries.map((entry) => (
+      <tr key={entry.id}>
+        <td>{new Date(entry.callDate).toLocaleString()}</td>
+        <td>{entry.orbiterName}</td>
+        <td>
+          {entry.occasion}
+          {entry.occasion === "Referral Follow up" && entry.referralId
+            ? ` - ${entry.referralId}`
+            : ""}
+          {entry.occasion === "Event Calling" && entry.eventName
+            ? ` - ${entry.eventName}`
+            : ""}
+          {entry.occasion === "Other" && entry.otherOccasion
+            ? ` - ${entry.otherOccasion}`
+            : ""}
+        </td>
+        <td>{entry.discussionDetails}</td>
+      <td>{formatDate(entry.nextFollowupDate)}</td>
 
-              <td>{entry.orbiterName}</td>
-              <td>{entry.occasion}</td>
-              <td>{entry.discussionDetails}</td>
-              <td>
-  <ul>
-    {entry.orbiterSuggestions?.map((s, i) => (
-      <li key={i}>{s}</li>
-    ))}
-  </ul>
-</td>
-<td>
-  <ul>
-    {entry.teamSuggestions?.map((s, i) => (
-      <li key={i}>{s}</li>
-    ))}
-  </ul>
-</td>
-<td>
-  <ul>
-    {entry.referralPossibilities?.map((s, i) => (
-      <li key={i}>{s}</li>
-    ))}
-  </ul>
+
+        <td>
+          <ul>
+            {entry.orbiterSuggestions?.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ul>
+        </td>
+        <td>
+          <ul>
+            {entry.teamSuggestions?.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ul>
+        </td>
+        <td>
+          <ul>
+            {entry.referralPossibilities?.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ul>
+        </td>
+      <td>
+  {entry.updatedAt
+    ? formatDate(entry.updatedAt.seconds ? entry.updatedAt.toDate() : entry.updatedAt)
+    : "—"}
 </td>
 
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+
     )}
 </div>
   
