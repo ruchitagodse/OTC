@@ -7,7 +7,6 @@ import "../../../../pages/feedback.css";
 import "../../../../src/app/styles/main.scss";
 import Edit from '../../../../component/AddMeeting';
 
-import Meetup from '../../../../component/MeetingMeetup';
 
 const EditAdminEvent = () => {
   const router = useRouter();
@@ -180,3 +179,4 @@ const fetchEvent = async (index) => {
 };
 
 export default EditAdminEvent;
+
