@@ -12,7 +12,7 @@ import Layout from '../../../../component/Layout';
 import "../../../../pages/feedback.css";
 import "../../../../src/app/styles/main.scss";
 
-import Edit from '../../../../component/EditConclave';
+
 
 
 const EditAdminEvent = () => {
