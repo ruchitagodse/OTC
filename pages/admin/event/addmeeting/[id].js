@@ -6,7 +6,6 @@ import Layout from '../../../../component/Layout';
 import "../../../../pages/feedback.css";
 import "../../../../src/app/styles/main.scss";
 import Edit from '../../../../component/AddMeeting';
-import ProspectSection from '../../../../component/ConclaveProspect';
 import RegisteredUsers from '../../../../component/RegisteredConclave';
 import Meetup from '../../../../component/MeetingMeetup';
 import KnowledgeSharingSection from '../../../../component/ConclaveKnowlegde';
