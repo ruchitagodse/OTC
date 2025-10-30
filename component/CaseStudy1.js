@@ -28,19 +28,25 @@ const Assessment = ({ id, fetchData }) => {
   }, [id]);
 
   // 🔹 Send Email
-  const sendCaseStudyEmail = async (prospectName, prospectEmail, orbiterName) => {
-    const body = `
-      Dear ${prospectName},
+const sendCaseStudyEmail = async (prospectName, prospectEmail, orbiterName) => {
+ const body = `
+Dear ${prospectName},
 
-      Subject: 📘 Your Case Study from UJustBe
+Subject: 📘 Your Case Study from UJustBe
 
-      We are delighted to share a case study with you that reflects the journey of authentic choice and contribution within UJustBe Universe.
+We are delighted to share a case study with you that reflects the journey of authentic choice and contribution within UJustBe Universe.
 
-      Please go through the case study carefully, as it will help you align better with our vision and values.
+Please go through the case study carefully, as it will help you align better with our vision and values.
 
-      Warm Regards,
-      ${orbiterName}
-    `;
+Click the link below to view the Case Study:
+https://firebasestorage.googleapis.com/v0/b/monthlymeetingapp.appspot.com/o/CaseStudy%2FHow%20to%20pass%20referral%20Doc%20-%20Ibrahim.pdf?alt=media&token=808a9100-d250-4998-aa07-79baed831ed6
+
+Warm Regards,
+${orbiterName}
+`;
+
+
+ 
 
     const templateParams = {
       prospect_name: prospectName,
@@ -66,7 +72,8 @@ const Assessment = ({ id, fetchData }) => {
 
   // 🔹 Send WhatsApp
   const sendCaseStudyMessage = async (orbiterName, prospectName, phone) => {
-    const bodyText = `Hi ${prospectName},\n\nHere is your case study from UJustBe. Please review it carefully and let us know your reflections.\n\nRegards,\n${orbiterName}`;
+    const bodyText = `Hi ${prospectName},\n\nHere is your case study from UJustBe.Click the link below to view the Case Study:
+https://firebasestorage.googleapis.com/v0/b/monthlymeetingapp.appspot.com/o/CaseStudy%2FHow%20to%20pass%20referral%20Doc%20-%20Ibrahim.pdf?alt=media&token=808a9100-d250-4998-aa07-79baed831ed6. Please review it carefully and let us know your reflections.\n\nRegards,\n${orbiterName}`;
 
     const payload = {
       messaging_product: "whatsapp",

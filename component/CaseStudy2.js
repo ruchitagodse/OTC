@@ -38,6 +38,9 @@ const Assessment = ({ id, fetchData }) => {
 
       Please go through the case study carefully, as it will help you align better with our vision and values.
 
+Click the link below to view the Case Study:
+https://firebasestorage.googleapis.com/v0/b/monthlymeetingapp.appspot.com/o/CaseStudy%2FHow%20to%20pass%20referral%20Doc%20-%20Sneha.pdf?alt=media&token=509239d3-6f7b-4fb1-8891-e68e06f2a79a
+
       Warm Regards,
       ${orbiterName}
     `;
@@ -66,7 +69,7 @@ const Assessment = ({ id, fetchData }) => {
 
   // 🔹 Send WhatsApp
   const sendCaseStudyMessage = async (orbiterName, prospectName, phone) => {
-    const bodyText = `Hi ${prospectName},\n\nHere is your second case study from UJustBe. Please review it carefully and let us know your reflections.\n\nRegards,\n${orbiterName}`;
+    const bodyText = `Hi ${prospectName},\n\nHere is your second case study from UJustBe. Click the link below to view the Case Study:https://firebasestorage.googleapis.com/v0/b/monthlymeetingapp.appspot.com/o/CaseStudy%2FHow%20to%20pass%20referral%20Doc%20-%20Sneha.pdf?alt=media&token=509239d3-6f7b-4fb1-8891-e68e06f2a79a. Please review it carefully and let us know your reflections.\n\nRegards,\n${orbiterName}`;
 
     const payload = {
       messaging_product: "whatsapp",
